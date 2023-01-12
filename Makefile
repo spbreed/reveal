@@ -13,6 +13,7 @@ build: $(HTML) index.md
 	pandoc --standalone -o html/index.html index.md
 	cp -R images reveal.js html
 	ls html/reveal.js
+	tree -fi
 	cp theme/*.css html/reveal.js/css/theme/.
 
 clean:
