@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Benji Fisher">
+  <meta name="dcterms.date" content="2020-03-03">
+  <title>Contributing to Drupal</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="reveal.js/dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Contributing to Drupal</h1>
+  <p class="author">Benji Fisher</p>
+  <p class="date">March 3, 2020</p>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="about-me" class="slide level2">
+<h2>About me</h2>
+<div style="display: inline-block; width: 20%">
+<p><img data-src="./images/yp.jpeg" alt="Yellow Pig" /> </p>
+</div>
+<div style="display: inline-block; width: 70%">
+<ul>
+<li>Benji Fisher</li>
+<li><a href="https://www.drupal.org/u/benjifisher">@benjifisher</a> on
+d.o since 2010-01</li>
+<li><a href="https://github.com/benjifisher">@benjifisher</a> on
+GitHub</li>
+<li><a href="https://gitlab.com/benjifisher">@benjifisher</a> on
+GitLab</li>
+<li><a href="https://twitter.com/benji17fisher">@benji17fisher</a> on
+Twitter</li>
+</ul>
+</div>
+</section>
+<section id="follow-along" class="slide level2">
+<h2>Follow along</h2>
+<p>Find a link to this presentation on my GitLab Pages:</p>
+<ul>
+<li><a
+href="https://benjifisher.gitlab.io/slide-decks/index.html">https://benjifisher.gitlab.io/slide-decks/index.html</a></li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>The issue funnel</li>
+<li>Why I review issues</li>
+<li>Help wanted! (Some non-code contributions)</li>
+</ul>
+</section></section>
+<section>
+<section id="the-issue-funnel" class="title-slide slide level1">
+<h1>The issue funnel</h1>
+
+</section>
+<section id="how-many" class="slide level2">
+<h2>How many?</h2>
+<h3 id="drupal-core-issues-8.x-2020-03-03">Drupal core issues: 8.x,
+2020-03-03</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th>Number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Active</td>
+<td>8174</td>
+</tr>
+<tr class="even">
+<td>Needs Work</td>
+<td>4582</td>
+</tr>
+<tr class="odd">
+<td>Needs Review</td>
+<td>2857</td>
+</tr>
+<tr class="even">
+<td>RTBC</td>
+<td>77</td>
+</tr>
+<tr class="odd">
+<td>Fixed</td>
+<td>63</td>
+</tr>
+<tr class="even">
+<td>Other</td>
+<td>1419</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="how-many-1" class="slide level2">
+<h2>How many?</h2>
+<h3 id="drupal-core-issues-8.x-2020-03-03-1">Drupal core issues: 8.x,
+2020-03-03</h3>
+<p><img data-src="./images/issues-pie-chart.png" alt="Pie chart" /> </p>
+</section>
+<section id="who-can-move" class="slide level2">
+<h2>Who can move?</h2>
+<h3 id="drupal-core-issues-8.x-2020-03-03-2">Drupal core issues: 8.x,
+2020-03-03</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th>Number</th>
+<th>Mover</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Active</td>
+<td>8174</td>
+<td>Developer</td>
+</tr>
+<tr class="even">
+<td>Needs Work</td>
+<td>4582</td>
+<td>Developer</td>
+</tr>
+<tr class="odd">
+<td>Needs Review</td>
+<td>2857</td>
+<td>Reviewer</td>
+</tr>
+<tr class="even">
+<td>RTBC</td>
+<td>77</td>
+<td>Committer</td>
+</tr>
+<tr class="odd">
+<td>Fixed</td>
+<td>63</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>Other</td>
+<td>1419</td>
+<td>???</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="why-i-review-issues" class="title-slide slide level1">
+<h1>Why I review issues</h1>
+
+</section>
+<section id="committers" class="slide level2">
+<h2>Committers</h2>
+<p>From <a
+href="https://git.drupalcode.org/project/drupal/raw/HEAD/core/MAINTAINERS.txt">core/MAINTAINERS.txt</a></p>
+<div style="display: inline-block; width: 45%">
+<ul>
+<li><code>dries</code></li>
+<li><code>webchick</code></li>
+<li><code>Gábor Hojtsy</code></li>
+<li><code>yoroy</code></li>
+<li><code>effulgentsia</code></li>
+<li><code>catch</code></li>
+</ul>
+</div>
+<div style="display: inline-block; width: 45%">
+<ul>
+<li><code>plach</code></li>
+<li><code>alexpott</code></li>
+<li><code>larowlan</code></li>
+<li><code>lauriii</code></li>
+<li><code>catch</code></li>
+<li><code>xjm</code></li>
+</ul>
+</div>
+</section>
+<section id="reviewers" class="slide level2">
+<h2>Reviewers</h2>
+<p>What does a reviewer have to do?</p>
+<ul>
+<li>Test</li>
+<li>Code review</li>
+<li>Improve the patch</li>
+</ul>
+<p>Most important:</p>
+<ul>
+<li>Protect the committers’ time</li>
+</ul>
+</section>
+<section id="example-restructure" class="slide level2">
+<h2>Example: restructure</h2>
+<p>From <a
+href="https://www.drupal.org/project/drupal/issues/2991207#comment-13282385">Comment
+#80</a> on #2991207:</p>
+<blockquote>
+<p>I would like to see the class of helper functions replaced with
+something more object-oriented: …</p>
+</blockquote>
+<p>(<code>@benjifisher</code>)</p>
+</section>
+<section id="example-protect-committers-time" class="slide level2">
+<h2>Example: protect committers’ time</h2>
+<p>From <a
+href="https://www.drupal.org/project/drupal/issues/3110186">#3110186</a>:</p>
+<ul>
+<li><p><code>@xjm</code> (#58):
+<code>Issue tags: +needs followup</code><br> … I think there’s some
+refactoring that should maybe be done, but that also would be a
+followup.</p></li>
+<li><p><code>@benjifisher</code> (#61):
+<code>Issue tags: -needs followup</code><br> I added #3117157:
+…</p></li>
+<li><p><code>@xjm</code> (#62): Perfect, thanks
+<code>@benjifisher</code>!</p></li>
+</ul>
+</section></section>
+<section>
+<section id="help-wanted" class="title-slide slide level1">
+<h1>Help wanted!</h1>
+
+</section>
+<section id="drupal-core-calendar" class="slide level2">
+<h2>Drupal core calendar</h2>
+<p><a
+href="https://calendar.google.com/calendar/embed?src=drupalcorecalendar%40association.drupal.org&amp;ctz=America%2FNew_York">drupalcorecalendar@association.drupal.org</a></p>
+<p><img data-src="./images/drupal-core-calendar.png"
+alt="Drupal core calendar for the week of 2020-03-09 in Eastern time (ET)" /> </p>
+</section>
+<section id="weekly-meetings" class="slide level2">
+<h2>Weekly meetings</h2>
+<ul>
+<li>New front-end theme initiative</li>
+<li>All things Drupal 9</li>
+<li>API-First weekly meeting</li>
+<li>Getting Involved Guide refresh</li>
+<li>Out of the box initiative meeting</li>
+<li>Layout initiative meeting</li>
+<li>Admin UI meeting</li>
+<li>Meta mentoring meeting</li>
+<li>Weekly UX meeting</li>
+<li>Migrate meeting</li>
+</ul>
+</section>
+<section id="weekly-ux-meeting" class="slide level2">
+<h2>Weekly UX meeting</h2>
+<ul>
+<li>Zoom (announced on Slack)</li>
+<li>Issues tagged “Needs usability review”</li>
+<li>IA, wordsmithing, usability</li>
+<li>Take notes, comment on issues, open new issues</li>
+</ul>
+</section>
+<section id="migrate-meeting" class="slide level2">
+<h2>Migrate meeting</h2>
+<ul>
+<li>Threaded Slack discussion</li>
+<li>Saved as Meeting issues</li>
+<li>Issues tagged NR in migration component</li>
+</ul>
+<p>From <a
+href="https://www.drupal.org/project/drupal/issues/3116548">Migrate
+Meeting 2020-02-27</a>:</p>
+<p><img data-src="./images/migrate-meeting.png"
+alt="Part of the Migrate Meeting from 2020-02-27: “What do we need to talk about? …”" /> </p>
+</section>
+<section id="copyleft" class="slide level2">
+<h2>Copyleft</h2>
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+</a> <br /> <span xmlns:dct="http://purl.org/dc/terms/"
+property="dct:title">This slide deck</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="https://benjifisher.gitlab.io/slide-decks/index.html" property="cc:attributionName" rel="cc:attributionURL">Benji
+Fisher</a> is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.
+<br />Based on a work at
+<a xmlns:dct="http://purl.org/dc/terms/" href="https://gitlab.com/benjifisher/slide-decks" rel="dct:source">https://gitlab.com/benjifisher/slide-decks</a>.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="reveal.js/plugin/notes/notes.js"></script>
+  <script src="reveal.js/plugin/search/search.js"></script>
+  <script src="reveal.js/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Benji Fisher">
+  <meta name="dcterms.date" content="2019-03-10">
+  <title>Caching Large Navigation Menus in Drupal</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="reveal.js/dist/theme/isovera.css" id="theme">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Caching Large Navigation Menus in Drupal</h1>
+  <p class="author">Benji Fisher</p>
+  <p class="date">March 10, 2019</p>
+</section>
+
+<section>
+<section id="before-we-get-started" class="title-slide slide level1">
+<h1>Before We Get Started</h1>
+
+</section>
+<section id="push-the-big-red-button" class="slide level2">
+<h2>Push the Big, Red Button!</h2>
+<p><img data-src="./images/kevinpic.jpg" alt="Big, red button" /> </p>
+</section>
+<section id="blog-post" class="slide level2">
+<h2>Blog post</h2>
+<p>https://www.isovera.com/blog/caching-large-navigation-menus-drupal</p>
+</section></section>
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="about-me" class="slide level2">
+<h2>About Me</h2>
+<div style="display: inline-block; width: 20%">
+<p><img data-src="./images/yp.jpeg" alt="Yellow Pig" /> </p>
+</div>
+<div style="display: inline-block; width: 70%">
+<ul>
+<li>Benji Fisher</li>
+<li><a href="https://www.drupal.org/u/benjifisher">@benjifisher</a> on
+d.o since 2010-01</li>
+<li><a href="https://github.com/benjifisher">@benjifisher</a> on
+GitHub</li>
+<li><a href="https://gitlab.com/benjifisher">@benjifisher</a> on
+GitLab</li>
+<li><a href="https://twitter.com/benji17fisher">@benji17fisher</a> on
+Twitter</li>
+</ul>
+</div>
+</section>
+<section id="about-isovera" class="slide level2">
+<h2>About Isovera</h2>
+<p><img data-src="./images/isovera_logo_reverse.svg"
+style="border: 0px; height: 2em;height:2em" alt="Isovera" /> </p>
+<p><a href="https://www.isovera.com/">https://www.isovera.com/</a></p>
+<ul>
+<li>Strategy</li>
+<li>Design</li>
+<li>Development</li>
+<li>Training</li>
+</ul>
+</section></section>
+<section>
+<section id="book-navigation-needs-to-be-cached"
+class="title-slide slide level1">
+<h1>Book Navigation Needs To Be Cached</h1>
+
+</section>
+<section id="pega-community-doc-page" class="slide level2">
+<h2>Pega Community Doc Page</h2>
+<figure>
+<img data-src="images/pega-book-nav.png"
+alt="Book navigation is nested several levels" />
+<figcaption aria-hidden="true">Book navigation is nested several
+levels</figcaption>
+</figure>
+</section>
+<section id="numbers" class="slide level2">
+<h2>Numbers</h2>
+<ul>
+<li>4472 pages in the book</li>
+<li>2.7 MB rendered (twice) for each page</li>
+<li>40-50 sec initial load</li>
+<li>6-9 sec load after caching</li>
+</ul>
+<p>After I did this work, the cached page loads in 2-3 sec.</p>
+</section>
+<section id="strategy" class="slide level2">
+<h2>Strategy</h2>
+<ol type="1">
+<li>Use the same navigation on all pages</li>
+<li>Set active trail with javascript</li>
+<li>Cache the navigation once per book</li>
+</ol>
+</section></section>
+<section>
+<section id="internal-vs.-external-cache"
+class="title-slide slide level1">
+<h1>Internal vs. External Cache</h1>
+
+</section>
+<section id="drupal-ftw" class="slide level2">
+<h2>Drupal FTW</h2>
+<p>Caching is one of the strengths of Drupal 8.</p>
+<p><img
+data-src="./images/drupal-logos/drupal-8-logo-stacked/drupal%208%20logo%20CMYK%2072.png"
+style="border: 0px; padding: 0.5em; height: 10em; background-color: white;;height:10em"
+alt="Logo for Drupal 8" /> </p>
+</section>
+<section id="internal-cache" class="slide level2">
+<h2>Internal Cache</h2>
+<p>Drupal stores bits and pieces in database or <code>memcache</code> or
+<code>redis</code>.</p>
+<p><img data-src="./images/database-drupal.png"
+style="background-color: white;"
+alt="Diagram showing database on the left, Drupal on the right" /> </p>
+</section>
+<section id="external-cache" class="slide level2">
+<h2>External Cache</h2>
+<p>Whole pages are stored in the database, Varnish, or a CDN.</p>
+<p><img data-src="./images/drupal-database-browser.png"
+style="background-color: white;"
+alt="Diagram showing Drupal, database, browser" /> </p>
+</section>
+<section id="the-hard-part" class="slide level2">
+<h2>The Hard Part</h2>
+<p>For both internal and external caches, the hard part is knowing when
+to clear the cache.</p>
+<h3 id="two-hard-things">Two hard things</h3>
+<ol type="1">
+<li>Naming things</li>
+<li>Off-by-one errors</li>
+<li>Cache invalidation</li>
+</ol>
+</section></section>
+<section>
+<section id="twig-template" class="title-slide slide level1">
+<h1>Twig Template</h1>
+
+</section>
+<section id="twig-template-simplified" class="slide level2">
+<h2>Twig Template (simplified)</h2>
+<pre class="twig"><code>{% if tree %}
+  &lt;nav class=&quot;c-book-nav&quot; role=&quot;navigation&quot; aria-labelledby=&quot;book-label-{{ book_id }}&quot;&gt;
+    &lt;a href=&quot;{{ book_url }}&quot;&gt;
+      {{ top_book_title }}
+    &lt;/a&gt;
+    {{ tree }}
+  &lt;/nav&gt;
+{% endif %}</code></pre>
+</section>
+<section id="twig-template-full" class="slide level2">
+<h2>Twig Template (full)</h2>
+<pre class="twig"><code>{% if tree %}
+  &lt;nav class=&quot;c-book-nav&quot; role=&quot;navigation&quot; aria-labelledby=&quot;book-label-{{ book_id }}&quot;&gt;
+    {% if top_book_title %}
+      {% if not top_book_empty %}
+        &lt;a href=&quot;{{ book_url }}&quot;&gt;
+      {% endif %}
+        {{ top_book_title }}
+      {% if not top_book_empty %}
+        &lt;/a&gt;
+      {% endif %}
+    {% endif %}
+    {{ tree }}
+  &lt;/nav&gt;
+{% endif %}</code></pre>
+</section></section>
+<section>
+<section id="drupal-code" class="title-slide slide level1">
+<h1>Drupal Code</h1>
+
+</section>
+<section id="hook-node-view" class="slide level2">
+<h2>Hook Node View</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> pdn_book_node_view(<span class="dt">array</span> <span class="op">&amp;</span><span class="va">$build</span><span class="ot">,</span> <span class="cn">N</span>odeInterface <span class="va">$node</span><span class="ot">,</span> <span class="cn">E</span>ntityViewDisplayInterface <span class="va">$display</span><span class="ot">,</span> <span class="va">$view_mode</span>) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="va">$view_mode</span> <span class="op">!=</span> <span class="st">&#39;full&#39;</span>) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="ot">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">empty</span>(<span class="va">$node</span>-&gt;book[<span class="st">&#39;bid&#39;</span>]) <span class="op">||</span> <span class="op">!</span><span class="kw">empty</span>(<span class="va">$node</span>-&gt;in_preview)) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="ot">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="va">$book_id</span> <span class="op">=</span> <span class="va">$node</span>-&gt;book[<span class="st">&#39;bid&#39;</span>]<span class="ot">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="va">$book_node</span> <span class="op">=</span> <span class="cn">N</span>ode::load(<span class="va">$book_id</span>)<span class="ot">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span><span class="va">$book_node</span>-&gt;access()) {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="ot">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Cache the navigation block once for the entire book.</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">// We will set the active trail client-side.</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#theme&#39;</span> =&gt; <span class="st">&#39;book_nav&#39;</span><span class="ot">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#book_id&#39;</span> =&gt; <span class="va">$book_id</span><span class="ot">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#weight&#39;</span> =&gt; <span class="dv">100</span><span class="ot">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;keys&#39;</span> =&gt; [<span class="st">&#39;pdn_book_nav&#39;</span><span class="ot">,</span> <span class="va">$book_id</span>]<span class="ot">,</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;contexts&#39;</span> =&gt; [<span class="st">&#39;languages&#39;</span>]<span class="ot">,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;tags&#39;</span> =&gt; [<span class="st">&quot;node:</span><span class="va">$book_id</span><span class="st">&quot;</span>]<span class="ot">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;max-age&#39;</span> =&gt; <span class="cn">C</span>ache::<span class="cn">PERMANENT</span><span class="ot">,</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</section>
+<section id="hook-theme" class="slide level2">
+<h2>Hook Theme</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> pdn_book_theme(<span class="va">$existing</span><span class="ot">,</span> <span class="va">$type</span><span class="ot">,</span> <span class="va">$theme</span><span class="ot">,</span> <span class="va">$path</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> [</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;book_nav&#39;</span> =&gt; [</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;variables&#39;</span> =&gt; [</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;book_id&#39;</span> =&gt; <span class="dv">0</span><span class="ot">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      ]<span class="ot">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</section>
+<section id="preprocess-function" class="slide level2">
+<h2>Preprocess Function</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> template_preprocess_book_nav(<span class="op">&amp;</span><span class="va">$variables</span>) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/** </span><span class="an">@var</span><span class="co"> </span><span class="do">\Drupal\book\BookManager</span><span class="co"> **/</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="va">$book_manager</span> <span class="op">=</span> \<span class="cn">D</span>rupal::service(<span class="st">&#39;book.manager&#39;</span>)<span class="ot">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Get the nested array (tree) of menu links.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">$book_tree</span> <span class="op">=</span> <span class="va">$book_manager</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    -&gt;bookTreeAllData(<span class="va">$variables</span>[<span class="st">&#39;book_id&#39;</span>])<span class="ot">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Generate a render array from the tree of links.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="va">$tree_output</span> <span class="op">=</span> <span class="va">$book_manager</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    -&gt;bookTreeOutput(<span class="fu">array_shift</span>(<span class="va">$book_tree</span>)[<span class="st">&#39;below&#39;</span>])<span class="ot">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">$variables</span>[<span class="st">&#39;tree&#39;</span>] <span class="op">=</span> <span class="va">$tree_output</span><span class="ot">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="va">$variables</span>[<span class="st">&#39;book_url&#39;</span>] <span class="op">=</span> \<span class="cn">D</span>rupal::url(</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;entity.node.canonical&#39;</span><span class="ot">,</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    [<span class="st">&#39;node&#39;</span> =&gt; <span class="va">$variables</span>[<span class="st">&#39;book_id&#39;</span>]]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  )<span class="ot">;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="va">$book_node</span> <span class="op">=</span> <span class="cn">N</span>ode::load(<span class="va">$variables</span>[<span class="st">&#39;book_id&#39;</span>])<span class="ot">;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="va">$variables</span>[<span class="st">&#39;top_book_title&#39;</span>] <span class="op">=</span> <span class="va">$book_node</span>-&gt;getTitle()<span class="ot">;</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="va">$variables</span>[<span class="st">&#39;top_book_empty&#39;</span>]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="op">!</span><span class="va">$book_node</span>-&gt;hasField(<span class="st">&#39;field_body&#39;</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">||</span> <span class="va">$book_node</span>-&gt;get(<span class="st">&#39;field_body&#39;</span>)-&gt;isEmpty()<span class="ot">;</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</section>
+<section id="javascript" class="slide level2">
+<h2>Javascript</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  Drupal<span class="op">.</span><span class="at">behaviors</span><span class="op">.</span><span class="at">bookNavExpand</span> <span class="op">=</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">attach</span><span class="op">:</span> <span class="kw">function</span> <span class="fu">attach</span>(context) {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      <span class="kw">var</span> bookNav <span class="op">=</span> <span class="fu">$</span>(<span class="st">&#39;.c-book-nav&#39;</span><span class="op">,</span> context)<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">$</span>(<span class="st">&#39;a[href=&quot;&#39;</span> <span class="op">+</span> context<span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">pathname</span> <span class="op">+</span> <span class="st">&#39;&quot;]&#39;</span><span class="op">,</span> bookNav)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addClass</span>(<span class="st">&#39;active&#39;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">parentsUntil</span>(bookNav<span class="op">,</span> <span class="st">&#39;.c-book-nav--list-expandable&#39;</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addClass</span>(<span class="st">&#39;c-book-nav--list-expanded&#39;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">children</span>(<span class="st">&#39;a&#39;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">addClass</span>(<span class="st">&#39;active&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">$</span>(<span class="st">&#39;.c-book-nav--list-expanded &gt; .c-book-nav--list&#39;</span><span class="op">,</span> context)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">once</span>(<span class="st">&#39;bookNavExpandInit&#39;</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">css</span>(<span class="st">&#39;display&#39;</span><span class="op">,</span> <span class="st">&#39;block&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">$</span>(<span class="st">&#39;.c-book-nav--expand-arrow&#39;</span><span class="op">,</span> context)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">once</span>(<span class="st">&#39;bookNavExpandClick&#39;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>          <span class="fu">$</span>(<span class="kw">this</span>)<span class="op">.</span><span class="fu">parent</span>()<span class="op">.</span><span class="fu">toggleClass</span>(<span class="st">&#39;c-book-nav--list-expanded&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>          <span class="fu">$</span>(<span class="kw">this</span>)<span class="op">.</span><span class="fu">siblings</span>(<span class="st">&#39;.c-book-nav--list&#39;</span>)<span class="op">.</span><span class="fu">slideToggle</span>()<span class="op">;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="hook-node-view-review" class="title-slide slide level1">
+<h1>Hook Node View (review)</h1>
+
+</section>
+<section id="hook-node-view-1" class="slide level2">
+<h2>Hook Node View</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#theme&#39;</span> =&gt; <span class="st">&#39;book_nav&#39;</span><span class="ot">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#book_id&#39;</span> =&gt; <span class="va">$book_id</span><span class="ot">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#weight&#39;</span> =&gt; <span class="dv">100</span><span class="ot">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;keys&#39;</span> =&gt; [<span class="st">&#39;pdn_book_nav&#39;</span><span class="ot">,</span> <span class="va">$book_id</span>]<span class="ot">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;contexts&#39;</span> =&gt; [<span class="st">&#39;languages&#39;</span>]<span class="ot">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;tags&#39;</span> =&gt; [<span class="st">&quot;node:</span><span class="va">$book_id</span><span class="st">&quot;</span>]<span class="ot">,</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;max-age&#39;</span> =&gt; <span class="cn">C</span>ache::<span class="cn">PERMANENT</span><span class="ot">,</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span></code></pre></div>
+</section>
+<section id="cache-keys" class="slide level2">
+<h2>Cache Keys</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;keys&#39;</span> =&gt; [<span class="st">&#39;pdn_book_nav&#39;</span><span class="ot">,</span> <span class="va">$book_id</span>]<span class="ot">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span></code></pre></div>
+<ul>
+<li>A unique string to identify “our” cache</li>
+<li>The book ID</li>
+</ul>
+<p>This is how we cache once per book.</p>
+<p>Without cache keys, any cache data will bubble up.</p>
+</section>
+<section id="cache-contexts" class="slide level2">
+<h2>Cache Contexts</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;contexts&#39;</span> =&gt; [<span class="st">&#39;languages&#39;</span>]<span class="ot">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span></code></pre></div>
+<p>If the book is viewed in another language, then the link text will
+change.</p>
+<p>Maybe also the link URLs.</p>
+<p>This site is not (yet) multilingual.</p>
+</section>
+<section id="cache-tags" class="slide level2">
+<h2>Cache Tags</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;tags&#39;</span> =&gt; [<span class="st">&quot;node:</span><span class="va">$book_id</span><span class="st">&quot;</span>]<span class="ot">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span></code></pre></div>
+<p>These are saved in the database.</p>
+<p>When <code>node/$book_id</code> is updated, delete from the
+cache.</p>
+<p>At page level, cache tags are sent in HTTP headers. Varnish/CDN
+invalidates based on cache tags.</p>
+</section>
+<section id="cache-max-age" class="slide level2">
+<h2>Cache Max Age</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>  <span class="va">$build</span>[<span class="st">&#39;book_nav&#39;</span>] <span class="op">=</span> [</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;#cache&#39;</span> =&gt; [</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;max-age&#39;</span> =&gt; <span class="cn">C</span>ache::<span class="cn">PERMANENT</span><span class="ot">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    ]<span class="ot">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  ]<span class="ot">;</span></span></code></pre></div>
+<p>Keep the cached version until I say to clear it.</p>
+</section></section>
+<section>
+<section id="peek-at-the-database" class="title-slide slide level1">
+<h1>Peek At the Database</h1>
+
+</section>
+<section id="the-cache_render-table" class="slide level2">
+<h2>The <code>cache_render</code> Table</h2>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mysql<span class="op">&gt;</span> DESCRIBE cache_render;</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">+</span><span class="co">------------+---------------+------+-----+---------+-------+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>| Field      | <span class="kw">Type</span>          | <span class="kw">Null</span> | <span class="kw">Key</span> | <span class="kw">Default</span> | Extra |</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">+</span><span class="co">------------+---------------+------+-----+---------+-------+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>| cid        | <span class="dt">varchar</span>(<span class="dv">255</span>)  | <span class="kw">NO</span>   | PRI |         |       |</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>| <span class="kw">data</span>       | longblob      | YES  |     | <span class="kw">NULL</span>    |       |</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>| <span class="kw">expire</span>     | <span class="dt">int</span>(<span class="dv">11</span>)       | <span class="kw">NO</span>   | MUL | <span class="dv">0</span>       |       |</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>| created    | <span class="dt">decimal</span>(<span class="dv">14</span>,<span class="dv">3</span>) | <span class="kw">NO</span>   | MUL | <span class="fl">0.000</span>   |       |</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>| serialized | <span class="dt">smallint</span>(<span class="dv">6</span>)   | <span class="kw">NO</span>   |     | <span class="dv">0</span>       |       |</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>| tags       | longtext      | YES  |     | <span class="kw">NULL</span>    |       |</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>| checksum   | <span class="dt">varchar</span>(<span class="dv">255</span>)  | <span class="kw">NO</span>   |     | <span class="kw">NULL</span>    |       |</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">+</span><span class="co">------------+---------------+------+-----+---------+-------+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="dv">7</span> <span class="kw">rows</span> <span class="kw">in</span> <span class="kw">set</span> (<span class="fl">0.01</span> sec)</span></code></pre></div>
+</section>
+<section id="query" class="slide level2">
+<h2>Query</h2>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mysql<span class="op">&gt;</span> <span class="kw">SELECT</span> cid, <span class="kw">expire</span>, created, tags, checksum</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cache_render</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> cid <span class="kw">LIKE</span> <span class="st">&#39;pdn_book%&#39;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">0</span>,<span class="dv">1</span>\G</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="op">**********************</span> <span class="fl">1.</span> <span class="kw">row</span> <span class="op">**********************</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>       cid: pdn_book_nav<span class="ch">:704369</span>:[languages]<span class="op">=</span>en:[theme]<span class="op">=</span>pegawww_theme:[<span class="fu">user</span>.permissions]<span class="op">=</span>4f64d6e20026c96e963d91bab0192f9824e8cb2e9352eb4c1ca18d78478abfdb</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">expire</span>: <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>   created: <span class="fl">1543638198.782</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      tags: config<span class="ch">:system</span>.book<span class="fl">.704369</span> node<span class="ch">:704369</span> rendered</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  checksum: <span class="dv">12</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="kw">row</span> <span class="kw">in</span> <span class="kw">set</span> (<span class="fl">0.00</span> sec)</span></code></pre></div>
+</section>
+<section id="cache-id" class="slide level2">
+<h2>Cache ID</h2>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mysql<span class="op">&gt;</span> <span class="kw">SELECT</span> cid</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cache_render</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> cid <span class="kw">LIKE</span> <span class="st">&#39;pdn_book%&#39;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">0</span>,<span class="dv">1</span>\G</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>cid:</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>     pdn_book_nav:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>     <span class="dv">704369</span>:</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>     [languages]<span class="op">=</span>en:</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>     [theme]<span class="op">=</span>pegawww_theme:</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>     [<span class="fu">user</span>.permissions]<span class="op">=</span>4f64d6e20026c96e963d91bab0192f9824e8cb2e9352eb4c1ca18d78478abfdb</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="kw">row</span> <span class="kw">in</span> <span class="kw">set</span> (<span class="fl">0.00</span> sec)</span></code></pre></div>
+<ul>
+<li>We specified <code>pdn_book_nav</code> in the cache keys</li>
+<li>The book ID also comes from cache keys</li>
+<li><code>languages</code> comes from cache contexts</li>
+<li><code>theme</code> and <code>permissions</code> … see below</li>
+</ul>
+</section>
+<section id="cache-max-age-1" class="slide level2">
+<h2>Cache Max Age</h2>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mysql<span class="op">&gt;</span> <span class="kw">SELECT</span> <span class="kw">expire</span>, created</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cache_render</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> cid <span class="kw">LIKE</span> <span class="st">&#39;pdn_book%&#39;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">0</span>,<span class="dv">1</span>\G</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">**********************</span> <span class="fl">1.</span> <span class="kw">row</span> <span class="op">**********************</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">expire</span>: <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>   created: <span class="fl">1543638198.782</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="kw">row</span> <span class="kw">in</span> <span class="kw">set</span> (<span class="fl">0.00</span> sec)</span></code></pre></div>
+</section>
+<section id="cache-tags-1" class="slide level2">
+<h2>Cache Tags</h2>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mysql<span class="op">&gt;</span> <span class="kw">SELECT</span> tags</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> cache_render</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> cid <span class="kw">LIKE</span> <span class="st">&#39;pdn_book%&#39;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">0</span>,<span class="dv">1</span>\G</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="op">**********************</span> <span class="fl">1.</span> <span class="kw">row</span> <span class="op">**********************</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      tags:</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        config<span class="ch">:system</span>.book<span class="fl">.704369</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        node<span class="ch">:704369</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        rendered</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="kw">row</span> <span class="kw">in</span> <span class="kw">set</span> (<span class="fl">0.00</span> sec)</span></code></pre></div>
+</section>
+<section id="permissions-hash" class="slide level2">
+<h2>Permissions Hash</h2>
+<p>Where do permissions come from?</p>
+<p>See <code>sites/default/services.yml</code>:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode yml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parameters</span><span class="kw">:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">renderer.config</span><span class="kw">:</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    # Renderer required cache contexts:</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">    #</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    # The Renderer will automatically associate these cache</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    # contexts with every render array, hence varying every</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">    # render array by these cache contexts.</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">    #</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">    # @default [&#39;languages:language_interface&#39;, &#39;theme&#39;, &#39;user.permissions&#39;]</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">required_cache_contexts</span><span class="kw">:</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&#39;languages:language_interface&#39;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&#39;theme&#39;</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&#39;user.permissions&#39;</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="after-party" class="title-slide slide level1">
+<h1>After Party</h1>
+
+</section>
+<section id="questions" class="slide level2">
+<h2>Questions</h2>
+</section>
+<section id="feedback" class="slide level2">
+<h2>Feedback</h2>
+<p><a href="https://nerd.ngo/feedback">https://nerd.ngo/feedback</a></p>
+<figure>
+<img data-src="./images/NERD-feedback.png"
+alt="Screenshot of feedback form" />
+<figcaption aria-hidden="true">Screenshot of feedback form</figcaption>
+</figure>
+</section>
+<section id="copyleft" class="slide level2">
+<h2>Copyleft</h2>
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+</a> <br /> <span xmlns:dct="http://purl.org/dc/terms/"
+property="dct:title">This slide deck</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="https://benjifisher.gitlab.io/slide-decks/index.html" property="cc:attributionName" rel="cc:attributionURL">Benji
+Fisher</a> is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.
+<br />Based on a work at
+<a xmlns:dct="http://purl.org/dc/terms/" href="https://gitlab.com/benjifisher/slide-decks" rel="dct:source">https://gitlab.com/benjifisher/slide-decks</a>.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="reveal.js/plugin/notes/notes.js"></script>
+  <script src="reveal.js/plugin/search/search.js"></script>
+  <script src="reveal.js/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Benji Fisher">
+  <title>Build Back Better - with the Migrate API</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="reveal.js/dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Build Back Better - with the Migrate API</h1>
+  <p class="author">Benji Fisher</p>
+  <p class="date">May 27, 2022 - DrupalCamp NJ</p>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="about-me" class="slide level2">
+<h2>About me</h2>
+<div style="display: flex; justify-content: space-between;">
+<div style="width: 25%">
+<p><img data-src="./images/yp.jpeg" style="margin: 0;"
+alt="Yellow Pig" /> </p>
+</div>
+<div style="width: 70%">
+<ul>
+<li>Benji Fisher</li>
+<li><a href="https://www.drupal.org/u/benjifisher">@benjifisher</a> on
+d.o</li>
+<li><a href="https://github.com/benjifisher">@benjifisher</a> on
+GitHub</li>
+<li><a href="https://gitlab.com/benjifisher">@benjifisher</a> on
+GitLab</li>
+<li><a href="https://twitter.com/benji17fisher">@benji17fisher</a> on
+Twitter</li>
+</ul>
+</div>
+</div>
+<p>Migration subsystem, Usability group, Security team (provisional
+member)</p>
+</section>
+<section id="about-fruition" class="slide level2">
+<h2>About Fruition</h2>
+<div style="display: flex; justify-content: space-between;">
+<div style="width: 50%; background-color: #00a5e5; color: #fff;">
+<p><img data-src="images/white-fruition-logo.svg"
+style="height: 50px; border: none; background: none; box-shadow: none;"
+alt="Fruition logo" /> </p>
+<p>Build. Grow. Protect.</p>
+</div>
+<div>
+<ul>
+<li>Digital Marketing</li>
+<li>Website Design</li>
+<li>Development</li>
+<li>Security &amp; Hosting</li>
+</ul>
+</div>
+</div>
+<p><a href="https://fruition.net/">https://fruition.net/</a></p>
+</section>
+<section id="follow-along" class="slide level2">
+<h2>Follow along</h2>
+<p>Find a link to this presentation on my GitLab Pages:</p>
+<ul>
+<li><a
+href="https://slides.benjifisher.info/">https://slides.benjifisher.info/</a></li>
+</ul>
+</section>
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<ul>
+<li>Introduction</li>
+<li>Bringing Data Into Drupal</li>
+<li>Migrate API Introduction</li>
+<li>Examples
+<ol type="1">
+<li>Use Editor styles</li>
+<li>Structure unstructured content</li>
+<li>Update links in body text</li>
+<li>Update from Drupal 7 Media</li>
+</ol></li>
+<li>Conclusion</li>
+</ul>
+</section></section>
+<section>
+<section id="bringing-data-into-drupal"
+class="title-slide slide level1">
+<h1>Bringing Data Into Drupal</h1>
+
+</section>
+<section id="upgrading-from-drupal-6-or-drupal-7" class="slide level2">
+<h2>Upgrading from Drupal 6 or Drupal 7</h2>
+<blockquote>
+<p>I need to update my Drupal 6 site. Better late than never!</p>
+</blockquote>
+<ul>
+<li>Q: What tool will you use?</li>
+<li>A: The Migrate API</li>
+</ul>
+</section>
+<section id="upgrading-from-other-systems" class="slide level2">
+<h2>Upgrading from other systems</h2>
+<blockquote>
+<p>I am getting tired of WordPress, but I have all these posts that I
+want to keep. How can I switch to Drupal?</p>
+</blockquote>
+<ul>
+<li>Q: What tool will you use?</li>
+<li>A: The Migrate API</li>
+</ul>
+</section>
+<section id="recurring-imports-feeds" class="slide level2">
+<h2>Recurring imports (feeds)</h2>
+<blockquote>
+<p>I need to create Drupal content every hour from an external Atom feed
+(or XML/JSON/SOAP/CSV)</p>
+</blockquote>
+<ul>
+<li>Q: What tool will you use?</li>
+<li>A: The Migrate API</li>
+</ul>
+<p>Did anyone say “Feeds module”?</p>
+</section>
+<section id="restructure-a-live-site" class="slide level2">
+<h2>Restructure a live site</h2>
+<blockquote>
+<p>I need to change the structure of my live Drupal site: add/remove a
+field, move field data to linked Paragraphs, …</p>
+</blockquote>
+<ul>
+<li>Q: What tool will you use?</li>
+<li>A: It depends. Use the Migrate API if you
+<ul>
+<li>need to track old/new entity IDs</li>
+<li>have complex dependencies</li>
+<li>can use the tools it provides</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="migrate-api-introduction" class="title-slide slide level1">
+<h1>Migrate API Introduction</h1>
+
+</section>
+<section id="one-project-many-migrations" class="slide level2">
+<h2>One project, many migrations</h2>
+<ul>
+<li>Each migration has one source: SQL, CSV, XML, …</li>
+<li>Each migration creates one entity type:
+<ul>
+<li>node</li>
+<li>media</li>
+<li>taxonomy term</li>
+<li>user</li>
+<li>…</li>
+</ul></li>
+<li>A single XML file can be the source of several entity types, several
+migrations</li>
+<li>A site upgrade can have dozens of migrations</li>
+</ul>
+</section>
+<section id="one-migration-three-stages" class="slide level2">
+<h2>One migration, three stages</h2>
+<p>Three stages: Extract, Transform, Load (ETL)</p>
+<ul>
+<li>Extract (source plugin): one per migration</li>
+<li>Transform (process plugins): one or more per field/property</li>
+<li>Load (destination plugin): one per migration</li>
+</ul>
+<p>Quiz: which stage is the most fun?</p>
+</section>
+<section id="transformprocess-apply-filters" class="slide level2">
+<h2>Transform/process: apply filters</h2>
+<p>Filter pipelines:</p>
+<ul>
+<li>Bash:
+<code>git branch --merged | grep feature | xargs git branch -d</code></li>
+<li>Twig:
+<code>list | map(item =&gt; item|lower) | join(', ')</code></li>
+</ul>
+<p>Each step gets its input from the previous one.</p>
+<p>The Transform/Process stage of the Migrate API works the same
+way.</p>
+</section>
+<section id="process-plugins" class="slide level2">
+<h2>Process plugins</h2>
+<p>Drupal core and contrib modules provide many filters, or
+<strong>process plugins</strong>.</p>
+<p>Most are configurable.</p>
+<p>Learning to use them and combine them into pipelines takes some
+practice.</p>
+</section>
+<section id="process-pipeline-example" class="slide level2">
+<h2>Process pipeline (example)</h2>
+<p>The Migrate API uses YAML to describe pipelines. (<a
+href="https://www.drupal.org/docs/drupal-apis/migrate-api/process-pipelines">explanation</a>
+of this example)</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">field_formatted_text</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> callback</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> old_field</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">callable</span><span class="kw">:</span><span class="at"> htmlentities</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> str_replace</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">search</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&#39;&amp;#160;&#39;</span><span class="kw">,</span><span class="at"> </span><span class="st">&#39;&amp;nbsp;&#39;</span><span class="kw">]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">replace</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39; &#39;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> callback</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">callable</span><span class="kw">:</span><span class="at"> trim</span></span></code></pre></div>
+</section>
+<section id="dom-processing" class="slide level2">
+<h2>DOM processing</h2>
+<p>Convert a text field (HTML string) to a DOMDocument object, process
+it, and save it as a string:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">&#39;body/value&#39;</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;body/0/value&#39;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">    # Other plugins do their work here.</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> export</span></span></code></pre></div>
+<p>The <code>body/0/value</code> bit is a short-cut. It is more
+complicated for multi-valued fields.</p>
+</section>
+<section id="xpath-examples" class="slide level2">
+<h2>XPath Examples</h2>
+<p>Use an XPath <code>selector</code> to identify one or more elements
+in a DOMDocument object:</p>
+<table>
+<colgroup>
+<col style="width: 59%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>selector</code></th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>//a</code></td>
+<td>all <code>&lt;a&gt;</code> elements</td>
+</tr>
+<tr class="even">
+<td><code>//a[class="external"]</code></td>
+<td>all <code>&lt;a&gt;</code> elements with
+<code>class="external"</code></td>
+</tr>
+<tr class="odd">
+<td><code>//li[class="nav"]/a</code></td>
+<td>all <code>&lt;a&gt;</code> elements direct children of
+<code>&lt;li class="nav"&gt;</code></td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="example-use-editor-styles"
+class="title-slide slide level1">
+<h1>Example: Use Editor styles</h1>
+
+</section>
+<section id="the-challenge" class="slide level2">
+<h2>The Challenge</h2>
+<blockquote>
+<p>I have to import documentation pages from an external system. The
+documentation is formatted as HTML, but it does not have the magic CSS
+classes that my theme uses. How can I make it match the site style
+guide?</p>
+</blockquote>
+</section>
+<section id="editor-styles" class="slide level2">
+<h2>Editor styles</h2>
+<p><img data-src="images/editor-styles-config.png"
+alt="editor styles configuration" /> </p>
+<p><img data-src="images/editor-styles.png" alt="editor styles" /> </p>
+</section>
+<section id="apply-styles-based-on-xpath" class="slide level2">
+<h2>Apply styles based on XPath</h2>
+<p>Let’s hope the source HTML has some consistency. Then we can identify
+elements we want to style with an XPath expression and apply configured
+styles:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">body/value</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;body/0/value&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_apply_styles</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">format</span><span class="kw">:</span><span class="at"> basic_html</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">rules</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">xpath</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;//ul&#39;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">style</span><span class="kw">:</span><span class="at"> Fancy list</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> export</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="example-structure-unstructured-content"
+class="title-slide slide level1">
+<h1>Example: Structure unstructured content</h1>
+
+</section>
+<section id="the-challenge-1" class="slide level2">
+<h2>The Challenge</h2>
+<blockquote>
+<p>Every Person page starts with a job title in an
+<code>&lt;h4&gt;</code> tag and a photo. How can I move those into
+separate fields, and keep the rest in the Body field?</p>
+</blockquote>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;h4&gt;</span>Chief Assistant to the Assistant Chief<span class="kw">&lt;/h4&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;...&quot;</span> <span class="er">alt</span><span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;</span>Alfred E. Newman has been with Mad Magazine since ...<span class="kw">&lt;/p&gt;</span></span></code></pre></div>
+</section>
+<section id="structure-unstructured-content-why" class="slide level2">
+<h2>Structure unstructured content: why?</h2>
+<ul>
+<li>Q: Why is it better to have the job title and image in separate
+fields?</li>
+<li>Q: Were you planning to hide parts of the Body field with CSS?</li>
+<li>Q: Are People pages coming from a Drupal 7 site, WordPress, or an
+XML feed?</li>
+</ul>
+</section>
+<section id="job-title-in-a-separate-field" class="slide level2">
+<h2>Job title in a separate field</h2>
+<p>When processing a Person page, use the <code>dom_select</code>
+plugin:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">field_job_title</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> body/0/value</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_select</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;//h4&#39;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">limit</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> extract</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">index</span><span class="kw">:</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="dv">0</span></span></code></pre></div>
+</section>
+<section id="photo-in-a-separate-field" class="slide level2">
+<h2>Photo in a separate field</h2>
+<p>Getting the photo is similar:</p>
+<ul>
+<li>Use <code>dom_select</code> with
+<code>selector: //img/@src</code>.</li>
+<li>Once you have the image URL, copy the file and make a File
+entity.</li>
+<li>Do all that in a separate migration.</li>
+<li>Use <code>migration_lookup</code> to get the File ID in the Person
+migration.</li>
+</ul>
+</section>
+<section id="remove-elements-from-body-field" class="slide level2">
+<h2>Remove elements from Body field</h2>
+<p>Once the job title and photo are in separate fields, remove them from
+the Body field:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">&#39;body/value&#39;</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;body/0/value&#39;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_remove</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;//h4&#39;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">limit</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_remove</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;//img&#39;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">limit</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> export</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="example-update-links-in-body-text"
+class="title-slide slide level1">
+<h1>Example: Update links in body text</h1>
+
+</section>
+<section id="the-challenge-2" class="slide level2">
+<h2>The Challenge</h2>
+<blockquote>
+<p>In my Drupal 7 site, “About us” was <code>/node/6</code>, but in the
+new site it is <code>/node/136</code>. A lot of Body fields have
+<code>&lt;a href="/node/6"&gt;About Us&lt;/a&gt;</code>. What can I
+do?</p>
+</blockquote>
+<p>This is why Marco Villegas (<code>@marvil07</code>) and I wrote the
+DOM process plugins. Thanks to Isovera and Pega Systems for letting us
+donate the code to the Migrate Plus module.</p>
+</section>
+<section id="update-links-lookup" class="slide level2">
+<h2>Update links: lookup</h2>
+<p>The Migrate API keeps track of source and destination IDs. Use
+<code>migration_lookup</code> to handle entity-reference fields:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">field_related_content</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> migration_lookup</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> field_related_content</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">migration</span><span class="kw">:</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> this_migration</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> that_migration</span></span></code></pre></div>
+<p>Pause and reflect.</p>
+</section>
+<section id="update-links-body-field" class="slide level2">
+<h2>Update links: body field</h2>
+<p>Use <code>dom_migration_lookup</code> to handle text fields:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">body/value</span><span class="kw">:</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;body/0/value&#39;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_migration_lookup</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> attribute</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">xpath</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;//a&#39;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">attribute_options</span><span class="kw">:</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> href</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">search</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;@/node/(\d+)@&#39;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">replace</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;/node/[mapped-id]&#39;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">migrations</span><span class="kw">:</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> article</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> page</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> export</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="example-update-from-drupal-7-media"
+class="title-slide slide level1">
+<h1>Example: Update from Drupal 7 Media</h1>
+
+</section>
+<section id="the-challenge-3" class="slide level2">
+<h2>The Challenge</h2>
+<blockquote>
+<p>I have a Drupal 7 site that uses the Media module. How do I migrate
+to Drupal 9?</p>
+</blockquote>
+</section>
+<section id="create-files-then-media" class="slide level2">
+<h2>Create files, then media</h2>
+<p>Standard migration: migrate files to files.</p>
+<p>Custom migration: migrate files to media.</p>
+<ul>
+<li>Source (Extract): same as the standard migration</li>
+<li>Process (Transform): use <code>migration_lookup</code> to find file
+ID from first step</li>
+<li>Destination (Load): create Media, not Files</li>
+</ul>
+<p>This works great for structured data (File fields).</p>
+</section>
+<section id="media-tokens" class="slide level2">
+<h2>Media tokens</h2>
+<p>Media tokens in text fields (Media and WYSIWYG modules)</p>
+<pre><code>Look at my kitten photo:
+[[{&quot;type&quot;: &quot;media&quot;, &quot;fid&quot;: 1909, ... }]]</code></pre>
+<p>There’s a module for that: <a
+href="https://www.drupal.org/project/media_migration">Media
+Migration</a> (alpha)</p>
+</section>
+<section id="image-tags" class="slide level2">
+<h2>Image tags</h2>
+<pre><code>My kitten is even cuter!
+&lt;img src=&quot;/images/kitten.jpg&quot; alt=&quot;cutest!&quot; /&gt;</code></pre>
+<p>There’s a module for that, too: <a
+href="https://www.drupal.org/project/migrate_media_handler">Migrate
+Media Handler</a></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">process</span><span class="kw">:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">&#39;body/value&#39;</span><span class="kw">:</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> import</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;body/0/value&#39;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_inline_doc_handler</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom_inline_image_handler</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">plugin</span><span class="kw">:</span><span class="at"> dom</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">method</span><span class="kw">:</span><span class="at"> export</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="conclusion" class="title-slide slide level1">
+<h1>Conclusion</h1>
+
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Introduction</li>
+<li>Bringing Data Into Drupal</li>
+<li>Migrate API Introduction</li>
+<li>Examples
+<ol type="1">
+<li>Use Editor styles</li>
+<li>Structure unstructured content</li>
+<li>Update links in body text</li>
+<li>Update from Drupal 7 Media</li>
+</ol></li>
+<li>Conclusion</li>
+</ul>
+</section>
+<section id="whats-next" class="slide level2">
+<h2>What’s next</h2>
+<ul>
+<li>Alternatives to <code>DOMDocument</code></li>
+<li>Source plugin for JSON:API</li>
+<li>Source plugin for Drupal 7 field</li>
+<li>More granular processing of DOM nodes</li>
+</ul>
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ul>
+<li><a href="https://slides.benjifisher.info">Benji’s slide
+decks</a></li>
+<li><a href="https://www.drupal.org/docs/8/api/migrate-api">Migrate
+API</a> documentation on drupal.org</li>
+<li><a href="https://www.drupal.org/project/migrate_plus">Migrate
+Plus</a> module home page</li>
+<li><a href="https://www.drupal.org/node/3062058">Change record</a>
+describing the DOMDocument-based plugins</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/XPath">XPath
+documentation</a> on MDN</li>
+<li><a
+href="https://www.drupal.org/docs/drupal-apis/migrate-api/process-pipelines">Process
+Pipelines</a> on drupal.org</li>
+<li><a href="https://www.drupal.org/project/media_migration">Media
+Migration</a> module</li>
+<li><a
+href="https://www.drupal.org/project/migrate_media_handler">Migrate
+Media Handler</a> module</li>
+</ul>
+</section>
+<section id="questions" class="slide level2">
+<h2>Questions</h2>
+</section>
+<section id="copyleft" class="slide level2">
+<h2>Copyleft</h2>
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+</a> <br /> <span xmlns:dct="http://purl.org/dc/terms/"
+property="dct:title">This slide deck</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="https://benjifisher.gitlab.io/slide-decks/index.html" property="cc:attributionName" rel="cc:attributionURL">Benji
+Fisher</a> is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.
+<br />Based on a work at
+<a xmlns:dct="http://purl.org/dc/terms/" href="https://gitlab.com/benjifisher/slide-decks" rel="dct:source">https://gitlab.com/benjifisher/slide-decks</a>.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="reveal.js/plugin/notes/notes.js"></script>
+  <script src="reveal.js/plugin/search/search.js"></script>
+  <script src="reveal.js/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

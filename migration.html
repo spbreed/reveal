@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Benji Fisher">
+  <meta name="dcterms.date" content="2019-02-05">
+  <title>The State of the Migrate API in Drupal 8</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="reveal.js/dist/theme/isovera.css" id="theme">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">The State of the Migrate API in Drupal 8</h1>
+  <p class="author">Benji Fisher</p>
+  <p class="date">February 5, 2019</p>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="the-state-of-the-migrate-api-is-strong"
+class="slide level2">
+<h2>The State of the Migrate API is Strong</h2>
+<p>Thanks for coming!</p>
+<p>I know you have many entertainment choices this evening.</p>
+</section>
+<section id="about-me" class="slide level2">
+<h2>About Me</h2>
+<div style="display: inline-block; width: 20%">
+<p><img data-src="./images/yp.jpeg" alt="Yellow Pig" /> </p>
+</div>
+<div style="display: inline-block; width: 70%">
+<ul>
+<li>Benji Fisher</li>
+<li><a href="https://www.drupal.org/u/benjifisher">@benjifisher</a> on
+d.o since 2010-01</li>
+<li><a href="https://github.com/benjifisher">@benjifisher</a> on
+GitHub</li>
+<li><a href="https://gitlab.com/benjifisher">@benjifisher</a> on
+GitLab</li>
+<li><a href="https://twitter.com/benji17fisher">@benji17fisher</a> on
+Twitter</li>
+</ul>
+</div>
+</section>
+<section id="about-isovera" class="slide level2">
+<h2>About Isovera</h2>
+<p><img data-src="./images/isovera_logo_reverse.svg"
+style="border: 0px; height: 2em;height:2em" alt="Isovera" /> </p>
+<p><a href="https://www.isovera.com/">https://www.isovera.com/</a></p>
+<ul>
+<li>Strategy</li>
+<li>Design</li>
+<li>Development</li>
+<li>Training</li>
+</ul>
+</section></section>
+<section>
+<section id="the-big-picture" class="title-slide slide level1">
+<h1>The Big Picture</h1>
+
+</section>
+<section id="geese-fly-north" class="slide level2">
+<h2>Geese Fly North</h2>
+<figure>
+<img
+data-src="./images/640px-Conservation_Program_of_the_Farm_Bill_Provides_Rest_for_Migrating_Cranes_and_Geese_in_Hanson_County,_SD_(16447925733).jpg"
+alt="USDA NRCS South Dakota (cc-by-sa-2.0)" />
+<figcaption aria-hidden="true">USDA NRCS South Dakota
+(cc-by-sa-2.0)</figcaption>
+</figure>
+</section>
+<section id="new-lamp-for-old" class="slide level2">
+<h2>New LAMP for Old</h2>
+<ul>
+<li>Site redesign</li>
+<li>Old site is Drupal 7, Drupal 6, WordPress, …</li>
+<li>New site is Drupal 8</li>
+</ul>
+</section>
+<section id="all-your-data-are-belong-to-us" class="slide level2">
+<h2>All Your Data Are Belong To Us</h2>
+<p>Migrate API takes anything into Drupal 8:</p>
+<ul>
+<li>Feed (XML, RSS, Atom)</li>
+<li>CSV (Users, Events)</li>
+<li>One time, incremental, update</li>
+</ul>
+</section></section>
+<section>
+<section id="history" class="title-slide slide level1">
+<h1>History</h1>
+
+</section>
+<section id="credits" class="slide level2">
+<h2>Credits</h2>
+<ul>
+<li>Mike Ryan</li>
+<li>Moshe Weitzman</li>
+<li>Economist.com</li>
+</ul>
+<p>Case study: <a href="https://www.drupal.org/node/915102">The
+Economist.com data migration to Drupal</a></p>
+</section>
+<section id="origins-boston-drupal-meetup" class="slide level2">
+<h2>Origins: Boston Drupal meetup</h2>
+<p>Mike Ryan’s <a
+href="https://virtuoso-performance.com/blog/mikeryan/boston-drupal-meetup">notes</a>
+from 2/21/2008:</p>
+<blockquote>
+<p>Moshe opined that a specialist in the dirty work of content migration
+might really clean up. … Definitely an avenue I will look into
+pursuing…</p>
+</blockquote>
+</section>
+<section id="earlier-versions" class="slide level2">
+<h2>Earlier versions</h2>
+<ul>
+<li>6.x-1.x-dev: March 9, 2009</li>
+<li>6.x-1.0: March 20, 2010</li>
+<li>6.x-2.0: March 10, 2011</li>
+<li>7.x-2.0: March 10, 2011</li>
+</ul>
+</section>
+<section id="what-migrate-does-well" class="slide level2">
+<h2>What Migrate Does Well</h2>
+<p>Even the early versions did many things right:</p>
+<ul>
+<li>Migrate keeps track of old/new IDs</li>
+<li>Support iterations (rollback)</li>
+<li>Incremental migration</li>
+</ul>
+</section>
+<section id="original-goals-d8" class="slide level2">
+<h2>Original Goals (D8)</h2>
+<ul>
+<li>This is our upgrade path! (D6 and D7)</li>
+<li>Work through the admin UI</li>
+<li>Config (Fields, Views, Date formats)</li>
+<li>Content (Nodes, Comments, Blocks, Taxonomy)</li>
+<li>Handle all sorts of modules</li>
+</ul>
+</section>
+<section id="would-you-believe" class="slide level2">
+<h2>Would You Believe …</h2>
+<ul>
+<li>Simple, 1-language sites via admin UI</li>
+<li>Robust tools for custom migrations</li>
+<li>Keep all the good parts of earlier versions</li>
+</ul>
+</section></section>
+<section>
+<section id="basic-migration-structure-etl"
+class="title-slide slide level1">
+<h1>Basic Migration Structure (ETL)</h1>
+
+</section>
+<section id="extract-transform-load-etl" class="slide level2">
+<h2>Extract, Transform, Load (ETL)</h2>
+<p>The Migrate API follows the standard ETL approach:</p>
+<ol type="1">
+<li>Extract (Source): Get the old data.</li>
+<li>Transform (Process): Massage the data.</li>
+<li>Load (Destination): Create nodes, taxonomy, users, …</li>
+</ol>
+</section>
+<section id="extract-source" class="slide level2">
+<h2>Extract (Source)</h2>
+<ul>
+<li>Another Drupal site (D6, D7, D8)</li>
+<li>Another CMS (WordPress, SiteCore, custom)</li>
+<li>Static XML, CSV, SQL</li>
+<li>Dynamic XML, JSON (Feeds)</li>
+<li>Other: FoxPro, Google Sheets</li>
+</ul>
+</section>
+<section id="extract-continued" class="slide level2">
+<h2>Extract (continued)</h2>
+<p>Some people put a lot of effort into this step, so that the next step
+is simple.</p>
+<p>I prefer to do more work in the Transform (process) step. I think
+there is more opportunity for reusable code there.</p>
+<p>There is no Right Way to do it.</p>
+</section>
+<section id="transform-process" class="slide level2">
+<h2>Transform (Process)</h2>
+<ul>
+<li>Convert data formats</li>
+<li>Clean up nasty markup (<code>font</code>, <code>blink</code>,
+<code>marquee</code>)</li>
+<li>Split strings into lists</li>
+<li>Split blobs into Paragraphs</li>
+</ul>
+</section>
+<section id="load-destination" class="slide level2">
+<h2>Load (Destination)</h2>
+<ul>
+<li>Entity (node, taxonomy, user, …)</li>
+<li>Config (field, view, …)</li>
+</ul>
+<p>This short list is a feature, not a bug.</p>
+<p>The Migrate API is written for Drupal. It already “knows” the
+destination.</p>
+</section>
+<section id="theory-and-practice-etl" class="slide level2">
+<h2>Theory and Practice (ETL)</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Read source</th>
+<th>Write destination</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Extract</td>
+<td>Theory</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Transform</td>
+<td>Practice</td>
+<td>Practice</td>
+</tr>
+<tr class="odd">
+<td>Load</td>
+<td></td>
+<td>Theory</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="let-me-count-the-ways" class="slide level2">
+<h2>Let Me Count the Ways</h2>
+<p>A typical migration project has several migrations, each with its own
+three stages.</p>
+<p>“Several” means dozens. Maybe hundreds.</p>
+</section></section>
+<section>
+<section id="easy-not-so-easy-hard" class="title-slide slide level1">
+<h1>Easy, Not So Easy, Hard</h1>
+
+</section>
+<section id="the-easy-part" class="slide level2">
+<h2>The Easy Part</h2>
+<p>Migrate All the Things:</p>
+<ul>
+<li>Files</li>
+<li>Roles</li>
+<li>Users</li>
+<li>Taxonomy</li>
+<li>Nodes</li>
+</ul>
+</section>
+<section id="the-not-so-easy-part" class="slide level2">
+<h2>The Not So Easy Part</h2>
+<p>Migrate relations between things:</p>
+<ul>
+<li>Roles attached to users</li>
+<li>Taxonomy attached to nodes</li>
+<li>Entity Reference (ER) fields</li>
+<li>Links in Body fields</li>
+<li>Previous/Next links</li>
+</ul>
+</section>
+<section id="the-hard-part" class="slide level2">
+<h2>The Hard Part</h2>
+<ul>
+<li>Translations</li>
+<li>Revisions</li>
+<li>Field Collections and Paragraphs</li>
+</ul>
+</section></section>
+<section>
+<section id="understand-the-source" class="title-slide slide level1">
+<h1>Understand the Source</h1>
+
+</section>
+<section id="triage" class="slide level2">
+<h2>Triage</h2>
+<ul>
+<li>Prioritize</li>
+<li>Migrate manually? (but relations are hard)</li>
+<li>Bit bucket</li>
+</ul>
+</section>
+<section id="audit-review-explore" class="slide level2">
+<h2>Audit, Review, Explore</h2>
+<ul>
+<li>Structure (translations, revisions, references, nested data)</li>
+<li>Markup</li>
+<li>Internal links</li>
+<li>What isn’t there? (e.g., meta tags)</li>
+</ul>
+</section>
+<section id="what-could-possibly-go-wrong" class="slide level2">
+<h2>What Could Possibly Go Wrong?</h2>
+<p>All the stuff your shiny, new site does not have:</p>
+<ul>
+<li>Change your mind</li>
+<li>Replicated structure from previous migrations</li>
+<li>Undocumented features</li>
+<li>Forgotten experiments</li>
+<li>Trojan horses</li>
+</ul>
+<p>If only there were one word …</p>
+</section>
+<section id="dumb-joke" class="slide level2">
+<h2>Dumb Joke</h2>
+<figure>
+<img data-src="./images/wsod.png" alt="Bigger Package 4 U" />
+<figcaption aria-hidden="true">Bigger Package 4 U</figcaption>
+</figure>
+</section></section>
+<section>
+<section id="the-fun-part-transform-process"
+class="title-slide slide level1">
+<h1>The Fun Part: Transform (Process)</h1>
+
+</section>
+<section id="source-and-destination" class="slide level2">
+<h2>Source and Destination</h2>
+<pre><code>source:
+  plugin: d7_node
+  node_type: article
+destination:
+  plugin: entity:node
+  default_bundle: article</code></pre>
+</section>
+<section id="simple-cases" class="slide level2">
+<h2>Simple Cases</h2>
+<pre><code>process:
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: en
+  title:
+    plugin: callback
+    source: title
+    callable: trim
+  status: status
+  created: created</code></pre>
+</section>
+<section id="migration-lookup" class="slide level2">
+<h2>Migration Lookup</h2>
+<pre><code>process:
+  uid:
+    plugin: migration_lookup
+    migration: user
+    source: node_uid</code></pre>
+</section>
+<section id="first-non-empty-first-try" class="slide level2">
+<h2>First Non-Empty (First Try)</h2>
+<pre><code>  parent_or_self:
+    -
+      plugin: callback
+      callable: array_filter
+      source:
+        - &#39;@parent_tid&#39;
+        - tid
+    -
+      plugin: callback
+      callable: array_shift</code></pre>
+</section>
+<section id="first-non-empty-new-way" class="slide level2">
+<h2>First Non-Empty (New Way)</h2>
+<pre><code>  parent_or_self:
+    -
+      plugin: callback
+      callable: array_filter
+      source:
+        - &#39;@parent_tid&#39;
+        - tid
+    -
+      plugin: array_shift</code></pre>
+</section>
+<section id="first-non-empty-old-way" class="slide level2">
+<h2>First Non-Empty (Old Way)</h2>
+<pre><code>  parent_or_self:
+    -
+      plugin: callback
+      callable: array_filter
+      source:
+        - &#39;@parent_tid&#39;
+        - tid
+    -
+      plugin: callback
+      callable: array_values
+    -
+      plugin: extract
+      index:
+        - 0</code></pre>
+</section>
+<section id="parsing-html-cthulhu-way" class="slide level2">
+<h2>Parsing HTML (Cthulhu Way)</h2>
+<figure>
+<img data-src="./images/regex-cthulhu.png"
+alt="https://stackoverflow.com/questions/1732348" />
+<figcaption
+aria-hidden="true">https://stackoverflow.com/questions/1732348</figcaption>
+</figure>
+</section>
+<section id="html-domdocument" class="slide level2">
+<h2>HTML (DOMDocument)</h2>
+<div style="width: 45%; display: inline-block">
+<p><img data-src="./images/styles.png"
+alt="Styles menu in CKEditor" /> </p>
+</div>
+<div style="width: 50%; display: inline-block">
+<pre><code>  &#39;field_body/value&#39;:
+    -
+      plugin: dom
+      method: import
+      source: body
+    -
+      plugin: dom_apply_styles
+      format: pega_html
+      rules:
+        -
+          xpath: &#39;//h2&#39;
+          style: H2
+    -
+      plugin: dom
+      method: export</code></pre>
+</div>
+<p><a
+href="https://www.drupal.org/project/migrate_plus/issues/2958281">https://www.drupal.org/project/migrate_plus/issues/2958281</a>
+(with Marco Villegas (<span class="citation"
+data-cites="marvil07">@marvil07</span>) for Pega)</p>
+</section></section>
+<section>
+<section id="advice" class="title-slide slide level1">
+<h1>Advice</h1>
+
+</section>
+<section id="general-advice-12" class="slide level2">
+<h2>General Advice (1/2)</h2>
+<ol type="1">
+<li>Understand the source.</li>
+<li>Look for test cases before you develop.</li>
+<li>Log a message whenever you skip an item.
+<ul>
+<li>unpublished</li>
+<li>empty title or body</li>
+<li>skip this language</li>
+</ul></li>
+</ol>
+</section>
+<section id="general-advice-22" class="slide level2">
+<h2>General Advice (2/2)</h2>
+<ol start="4" type="1">
+<li>Develop and test small pieces
+<ul>
+<li>Understand why some content was skipped.</li>
+<li>Do not copy untested code.</li>
+</ul></li>
+<li>You will make mistakes, so code review and QA are critical.</li>
+</ol>
+</section></section>
+<section>
+<section id="the-future" class="title-slide slide level1">
+<h1>The Future</h1>
+
+</section>
+<section id="feeds-migrate" class="slide level2">
+<h2>Feeds Migrate</h2>
+<p>The Feeds module in D8 should be a front end to the Migrate API.</p>
+<p>See <a
+href="https://www.drupal.org/project/feeds_migrate">https://www.drupal.org/project/feeds_migrate</a>.</p>
+</section>
+<section id="soong" class="slide level2">
+<h2>Soong</h2>
+<p>Mike Ryan started Soong, a PHP library for ETL:</p>
+<ul>
+<li><a
+href="https://virtuoso-performance.com/blog/mikeryan/announcing-soong-project-developing-general-purpose-etl-framework">Announcement
+and goals</a> (1/22/2019)</li>
+<li><a href="https://soong-etl.readthedocs.io/en/latest/">docs</a></li>
+<li><a href="https://gitlab.com/soongetl/soong">repo on GitLab</a></li>
+</ul>
+<p>One goal: decouple from Drupal, <em>e.g.</em>, the plugin system.</p>
+</section>
+<section id="job-security" class="slide level2">
+<h2>Job Security</h2>
+<ul>
+<li>June 3, 2020: Target for Drupal 9</li>
+<li>November 2021: End of Life for D7, D8</li>
+</ul>
+<p>Plenty of work for people who can handle custom migrations.</p>
+</section>
+<section id="job-insecurity" class="slide level2">
+<h2>Job Insecurity</h2>
+<ul>
+<li>There is a better way.</li>
+<li>Divide and Conquer.</li>
+<li>Hard part: interface or API (Stroustrup)</li>
+<li>JSON API, GraphQL</li>
+<li>(Think of Gatsby.)</li>
+</ul>
+<p>Migrations will not always be hard.</p>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1">
+<h1>Summary</h1>
+
+</section>
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<ul>
+<li>Introduction</li>
+<li>The Big Picture</li>
+<li>History</li>
+<li>Basic Migration Structure (ETL)</li>
+<li>Easy, Not So Easy, Hard</li>
+<li>Understand the Source</li>
+<li>The Fun Part: Transform (Process)</li>
+<li>Advice</li>
+<li>The Future</li>
+<li>Summary</li>
+</ul>
+</section>
+<section id="references-13" class="slide level2">
+<h2>References (1/3)</h2>
+<ul>
+<li>Migrating Geese:
+<a href="https://www.flickr.com/people/68847506@N08">USDA NRCS South
+Dakota</a>,
+<a href="https://commons.wikimedia.org/wiki/File:Conservation_Program_of_the_Farm_Bill_Provides_Rest_for_Migrating_Cranes_and_Geese_in_Hanson_County,_SD_(16447925733).jpg">Conservation
+Program of the Farm Bill Provides Rest for Migrating Cranes and Geese in
+Hanson County, SD (16447925733)</a>,
+<a href="https://creativecommons.org/licenses/by-sa/2.0/legalcode" rel="license">CC
+BY-SA 2.0</a></li>
+<li>The Economist.com data migration to Drupal: <a
+href="https://www.drupal.org/node/915102">https://www.drupal.org/node/915102</a></li>
+</ul>
+</section>
+<section id="references-23" class="slide level2">
+<h2>References (2/3)</h2>
+<ul>
+<li>HTML and regex: <a
+href="https://stackoverflow.com/questions/1732348">https://stackoverflow.com/questions/1732348</a></li>
+<li>HTML processing with DOMDocument: <a
+href="https://www.drupal.org/project/migrate_plus/issues/2958281">https://www.drupal.org/project/migrate_plus/issues/2958281</a></li>
+<li>Feeds Migrate: <a
+href="https://www.drupal.org/project/feeds_migrate">https://www.drupal.org/project/feeds_migrate</a></li>
+</ul>
+</section>
+<section id="references-33" class="slide level2">
+<h2>References (3/3)</h2>
+<ul>
+<li>Migrate API docs: <a
+href="https://www.drupal.org/docs/8/api/migrate-api">https://www.drupal.org/docs/8/api/migrate-api</a></li>
+<li>Shameless plug: Importing an Atom Feed …
+<ul>
+<li>Part 1: <a
+href="https://www.isovera.com/blog/importing-atom-feed-drupal-8-migrate-api-and-paragraphs-part-1">https://www.isovera.com/blog/importing-atom-feed-drupal-8-migrate-api-and-paragraphs-part-1</a></li>
+<li>Part 2: <a
+href="https://www.isovera.com/blog/importing-atom-feed-drupal-8-migrate-api-and-paragraphs-part-2">https://www.isovera.com/blog/importing-atom-feed-drupal-8-migrate-api-and-paragraphs-part-2</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="copyleft" class="slide level2">
+<h2>Copyleft</h2>
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+</a> <br /> <span xmlns:dct="http://purl.org/dc/terms/"
+property="dct:title">This slide deck</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="https://benjifisher.gitlab.io/slide-decks/index.html" property="cc:attributionName" rel="cc:attributionURL">Benji
+Fisher</a> is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.
+<br />Based on a work at
+<a xmlns:dct="http://purl.org/dc/terms/" href="https://gitlab.com/benjifisher/slide-decks" rel="dct:source">https://gitlab.com/benjifisher/slide-decks</a>.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="reveal.js/plugin/notes/notes.js"></script>
+  <script src="reveal.js/plugin/search/search.js"></script>
+  <script src="reveal.js/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
