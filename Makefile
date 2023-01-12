@@ -12,8 +12,8 @@ default: example.html
 build: $(HTML) index.md
 	pandoc --standalone -o html/index.html index.md
 	cp -R images reveal.js html
-	ls html
-	cp theme/*.css html /reveal.js/css/theme/.
+	ls html/reveal.js
+	cp theme/*.css html/reveal.js/css/theme/.
 
 clean:
 	rm -rf html/*.html html/images html/reveal.js
