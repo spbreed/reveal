@@ -1,0 +1,4 @@
+/html/*.html
+/html/images/
+/html/reveal.js/
+*.pdf

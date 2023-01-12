@@ -1,0 +1,17 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - apt-get update -qq && apt-get install -qq -y pandoc
+  - pandoc --version
+
+pages:
+  stage: deploy
+  script:
+    - make build
+    - ls html
+    - cp -R html public
+    - ls public
+  artifacts:
+    paths:
+      - public
